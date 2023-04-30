@@ -1,16 +1,9 @@
 from enum import Enum
-    
-class Item_Stat_Modifier(Enum):
-    LEVEL = 1
-    EXPERIENCE = 2
-    HEALTH_MAX = 3
-    HEALTH_CUR = 4
-    ATTACK_POWER = 5
-    ATTACK_SPEED = 6
+from stat_class import Stat    
             
 class Item:
     def __init__(self, item_name: str,
-                 item_modifiers: dict,
+                 item_modifiers: dict = {Stat.NONE: 0},
                  item_description: str = "Item lacks description",
                  value: int = 1):
         if not isinstance(item_name, str):
@@ -22,3 +15,5 @@ class Item:
         self.description = item_description
         self.value = value
         
+    def Item_Examination(self):
+        print(f"{self.name}: {self.description}")

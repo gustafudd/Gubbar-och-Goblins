@@ -4,26 +4,31 @@ from enum import Enum
 import Items.item as Item
 import Items.consumable as Consumable
 import Items.equipment as Equipment
+import Items.other as Item_Other
 
 class Player(Unit):
     def __init__(self,
                  name: str,
                  level: Stat.LEVEL = 1,
-                 experience: Stat.EXPERIENCE = 0,
+                 experience_cur: Stat.EXPERIENCE = 0,
+                 experience_max: int = 100,
                  health: Stat.HEALTH_MAX = 100,
                  attack_power: Stat.ATTACK_POWER = 2,
                  attack_speed: Stat.ATTACK_SPEED = 0.8,
                  description:str = "A tiny adventurer",
-                 inventory = []):
+                 inventory = [],
+                 gold = 0):
          super().__init__("Player",
                           name,
                           level,
-                          experience,
+                          experience_cur,
                           health,
                           attack_power,
                           attack_speed,
                           description)
+         self.experience_max = (level * level) * 100
          self.inventory = inventory
+         self.gold = gold
          self.equipped = {
              Equipment_Slot.HEAD: None,
              Equipment_Slot.SHOULDERS: None,
@@ -40,15 +45,13 @@ class Player(Unit):
         print("--- PLAYER STATS ---")
         print(f"Name: {self.name}")
         print(f"Level: {self.stats[Stat.LEVEL]}")
-        print(f"Experience: [{self.stats[Stat.EXPERIENCE]}/{int(self.stats[Stat.EXPERIENCE]+self.stats[Stat.LEVEL]*100*1.5)}]")
+        print(f"Experience: [{self.stats[Stat.EXPERIENCE]}/{self.experience_max}]")
         print(f"Health: [{self.stats[Stat.HEALTH_CUR]}/{self.stats[Stat.HEALTH_MAX]}]")
         print(f"Attack Power: {self.stats[Stat.ATTACK_POWER]}")
         print(f"Attack Speed: {self.stats[Stat.ATTACK_SPEED]}")
         
         # Item Inventory
-        print("\n --- INVENTORY ---")
-        for item in self.inventory:
-            print(f"Item: {item.name}")
+        self.Print_Inventory()
         
         # Equipped
         print("\n --- EQUIPPED ---")
@@ -56,31 +59,36 @@ class Player(Unit):
             if self.equipped[equipped_item] is not None:
                 print(f"{equipped_item}: {self.equipped[equipped_item].name}")
             
-        print("--- --- ---")
+        print(" --- --- ---")
+        
+    def Print_Inventory(self):
+        print(" --- INVENTORY --- ")
+        for item in self.inventory:
+            print(f"Item: {item.name}")
          
     def Add_Item_To_Inventory(self, item: Item):
         if not isinstance(item, Item.Item):
             raise TypeError("Item must be of Item type")
         self.inventory.append(item)     
          
-    def Equip_Equipment(self, equipment: Equipment):
+    def Equip_Equipment(self, equipment: Equipment.Equipment):
         if not isinstance(equipment, Equipment.Equipment):
             raise TypeError("Equipment must be of Item type")
         if not equipment in self.inventory:
             raise ValueError("Equipment not in inventory")
-        
+                
         # Equip the item and remove from inventory
         self.equipped[equipment.equipment_slot] = equipment
         self.inventory.remove(equipment)
         
         # Modify player stats
         for Modifier in equipment.modifiers:
-            if Modifier == Item.Item_Stat_Modifier.HEALTH_MAX:
+            if Modifier == Item.Stat.HEALTH_MAX:
                 self.stats[Stat.HEALTH_MAX] += equipment.modifiers[Modifier]
                 self.stats[Stat.HEALTH_CUR] += equipment.modifiers[Modifier]
-            if Modifier == Item.Item_Stat_Modifier.ATTACK_POWER:
+            if Modifier == Item.Stat.ATTACK_POWER:
                 self.stats[Stat.ATTACK_POWER] += equipment.modifiers[Modifier]
-            if Modifier == Item.Item_Stat_Modifier.ATTACK_SPEED:
+            if Modifier == Item.Stat.ATTACK_SPEED:
                 self.stats[Stat.ATTACK_SPEED] += equipment.modifiers[Modifier]
                 
         print(f"You equipped {equipment.name}.")
@@ -98,7 +106,7 @@ class Player(Unit):
                 self.stats[Stat.ATTACK_POWER] -= equipment.modifiers[Modifier]
             if Modifier == Item.Item_Stat_Modifier.ATTACK_SPEED:
                 self.stats[Stat.ATTACK_SPEED] -= equipment.modifiers[Modifier]
-        
+              
     def Use_Consumable(self, consumable: Consumable):
         if not isinstance(consumable, Consumable.Consumbable):
             raise TypeError("Consumable must be of type Consumable")
@@ -129,9 +137,11 @@ class Player(Unit):
                 print("No modifier changed")
 
         self.inventory.remove(consumable)
-        
+       
+    def Interact_With_Other_Item(self, item: Item_Other):
+        item.Interact(self)
 
-            
+
 
 class Equipment_Slot(Enum):
     HEAD = 1

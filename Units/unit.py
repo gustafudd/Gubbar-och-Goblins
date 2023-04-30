@@ -1,12 +1,5 @@
 from enum import Enum
-
-class Stat(Enum):
-    LEVEL = 1
-    EXPERIENCE = 2
-    HEALTH_MAX = 3
-    HEALTH_CUR = 4
-    ATTACK_POWER = 5
-    ATTACK_SPEED = 6
+from stat_class import Stat
 
 class Type(Enum):
     PLAYER = 1

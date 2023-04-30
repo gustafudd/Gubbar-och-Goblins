@@ -1,50 +1,41 @@
 import Units.player as Player_Class
 import Units.enemy as Enemy_Class
 
+import Items.item_db as IDB
 import Items.item as Item
 import Items.equipment as Equipment
 import Items.consumable as Consumable
+import Items.other as Item_Other
 
 import combat as Combat_Handler
 
-
-def main_combat_with_input():
-    enemy = Enemy_Class.Enemy("Gobbe")
+def functionality_test():
+        
+    # Create two temporary, poor units
+    player = Player_Class.Player("Apskrutt", attack_power = 100)
+    enemy = Enemy_Class.Enemy("Gobbe", health = 1)
     
-    p_name = input("What is your name, hero?\n")
-    p_atk_s = int(input("How fast are you?\n"))
-    player = Player_Class.Player(p_name, p_atk_s)
-
+    # Put the two temporary units up against each other.
+    # Gobbe does not stand a chance what so ever.
     Combat_Handler.Combat(player, enemy)
-
-def main_raw():
     
-    # Two temporary, poor units
-    player = Player_Class.Player("Apskrutt")
-    enemy = Enemy_Class.Enemy("Gobbe", health = 40)
+    # We surely must have looted something!
+    player.Print_Inventory()
     
-    sword = Equipment.Equipment(name = "Small Sword",
-                      equipment_slot = Equipment.Equipment_Slot.WEAPON,
-                      modifier = {Equipment.Item_Stat_Modifier.ATTACK_POWER: 5,
-                                  Equipment.Item_Stat_Modifier.ATTACK_SPEED: 3},
-                      description = "A small sword that gives a slight bonus to strength",
-                      value = 20)
-    
-    apple = Consumable.Consumbable(name = "Apple",
-                                   modifiers = {Consumable.Item_Stat_Modifier.HEALTH_MAX: 20},
-                                   description = "A tiny, tiny apple",
-                                   value = 1)
-    
-    player.Add_Item_To_Inventory(sword)
-    player.Equip_Equipment(sword)
-
-    player.Add_Item_To_Inventory(apple)
-    player.Use_Consumable(apple)
-    
+    # Creating a temporary, separate list from the player inventory as some 
+    # elements may be deleted during the loop, breaking the for-loop.
+    for item in list(player.inventory):
+        if isinstance(item, Equipment.Equipment):
+            player.Equip_Equipment(item)
+        if isinstance(item, Consumable.Consumbable):
+            player.Use_Consumable(item)
+        if isinstance(item, Item_Other.Other):
+            player.Interact_With_Other_Item(item)
+            
+    # What is our status after all of this?
     player.Print_Character_Info()
-    
-    #Combat_Handler.Combat(player, enemy)
 
+def main():
+    functionality_test()
 
-# Start the show!    
-main_raw()
+main()

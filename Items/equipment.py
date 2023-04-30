@@ -24,3 +24,23 @@ class Equipment(Item):
         
         self.equipment_slot = equipment_slot
         
+    def Equipment_Slot_To_String(slot: Equipment_Slot):
+        if slot == Equipment_Slot.HEAD:
+            return "head"
+        if slot == Equipment_Slot.SHOULDERS:
+            return "shoulders"
+        if slot == Equipment_Slot.CHEST:
+            return "chest"
+        if slot == Equipment_Slot.HANDS:
+            return "hands"
+        if slot == Equipment_Slot.WEAPON:
+            return "weapon"
+        if slot == Equipment_Slot.SHIELD:
+            return "shield"
+        if slot == Equipment_Slot.LEGS:
+            return "legs"
+        if slot == Equipment_Slot.FEET:
+            return "feet"
+        if slot == Equipment_Slot.NONE:
+            return "none"
+        
